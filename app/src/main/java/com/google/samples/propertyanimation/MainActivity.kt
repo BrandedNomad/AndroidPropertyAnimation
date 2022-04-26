@@ -35,12 +35,17 @@ class MainActivity : AppCompatActivity() {
     lateinit var fadeButton: Button
     lateinit var colorizeButton: Button
     lateinit var showerButton: Button
+    var starStartingPos = 0f
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         star = findViewById(R.id.star)
+        starStartingPos = star.getX()
         rotateButton = findViewById<Button>(R.id.rotateButton)
         translateButton = findViewById<Button>(R.id.translateButton)
         scaleButton = findViewById<Button>(R.id.scaleButton)
@@ -73,21 +78,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun disableViewDuringAnimation(view:View, animator:Animator){
+        animator.addListener(object: AnimatorListenerAdapter(){
+            override fun onAnimationStart(animation: Animator?){
+                view.isEnabled =false
+            }
+            override fun onAnimationEnd(animation:Animator?){
+                view.isEnabled=true
+            }
+        })
+    }
+
     private fun rotater() {
         val animator: ObjectAnimator = ObjectAnimator.ofFloat(star, View.ROTATION,-360f,0f)
         animator.duration = 1000
-        animator.addListener(object: AnimatorListenerAdapter(){
-            override fun onAnimationStart(animation: Animator?){
-                rotateButton.isEnabled =false
-            }
-            override fun onAnimationEnd(animation:Animator?){
-                rotateButton.isEnabled=true
-            }
-        })
+        disableViewDuringAnimation(rotateButton,animator)
         animator.start()
     }
 
     private fun translater() {
+        val animator = ObjectAnimator.ofFloat(star,View.TRANSLATION_X,200f)
+        animator.repeatCount = 3
+        animator.repeatMode = ObjectAnimator.REVERSE
+        disableViewDuringAnimation(translateButton,animator)
+        animator.start()
     }
 
     private fun scaler() {
